@@ -4,6 +4,43 @@ pageextension 51253 "Sales Dashboard Tiles" extends "Sales & Relationship Mgr. A
     {
         addbefore(Contacts)
         {
+            cuegroup("Unit Status")
+            {
+                Caption = 'Unit Status';
+                field("Free Units"; this.GetAllFreeUnitsCount())
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Free Units';
+                    ToolTip = 'Count of all free units.';
+
+                    trigger OnDrillDown()
+                    begin
+                        this.ShowFreeUnits();
+                    end;
+                }
+                field("Reserved Units"; this.GetAllReservedUnitsCount())
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Reserved Units';
+                    ToolTip = 'Count of all reserved units.';
+
+                    trigger OnDrillDown()
+                    begin
+                        this.ShowReservedUnits();
+                    end;
+                }
+                field("Sold Units"; this.GetAllSoldUnitsCount())
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Sold Units';
+                    ToolTip = 'Count of all sold units.';
+
+                    trigger OnDrillDown()
+                    begin
+                        this.ShowSoldUnits();
+                    end;
+                }
+            }
             cuegroup("Tasks")
             {
                 Caption = 'All Lead Task''s';
@@ -79,7 +116,81 @@ pageextension 51253 "Sales Dashboard Tiles" extends "Sales & Relationship Mgr. A
             }
         }
     }
+    //Free Units Count
+    procedure GetAllFreeUnitsCount(): Integer;
+    var
+        ItemRec: Record Item;
+    begin
+        // Filter for Inventory template, Unit Inventory type, and Free status
+        ItemRec.SetRange("Item Template", ItemRec."Item Template"::Inventory);
+        ItemRec.SetRange("Item type template", ItemRec."Item type template"::"Unit Inventory");
+        ItemRec.SetRange("Inventory Unit Status", ItemRec."Inventory Unit Status"::Free);
+        exit(ItemRec.Count());
+    end;
 
+    procedure ShowFreeUnits();
+    var
+        ItemRec: Record Item;
+        ItemListPage: Page "Item List";
+    begin
+        // Filter for Inventory template, Unit Inventory type, and Free status
+        ItemRec.SetRange("Item Template", ItemRec."Item Template"::Inventory);
+        ItemRec.SetRange("Item type template", ItemRec."Item type template"::"Unit Inventory");
+        ItemRec.SetRange("Inventory Unit Status", ItemRec."Inventory Unit Status"::Free);
+        ItemListPage.SetTableView(ItemRec);
+        ItemListPage.Run();
+    end;
+
+    //Reserved Units Count
+    procedure GetAllReservedUnitsCount(): Integer;
+    var
+        ItemRec: Record Item;
+    begin
+        // Filter for Inventory template, Unit Inventory type, and Reserved status
+        ItemRec.SetRange("Item Template", ItemRec."Item Template"::Inventory);
+        ItemRec.SetRange("Item type template", ItemRec."Item type template"::"Unit Inventory");
+        ItemRec.SetRange("Inventory Unit Status", ItemRec."Inventory Unit Status"::Reserved);
+        exit(ItemRec.Count());
+    end;
+
+    procedure ShowReservedUnits();
+    var
+        ItemRec: Record Item;
+        ItemListPage: Page "Item List";
+    begin
+        // Filter for Inventory template, Unit Inventory type, and Reserved status
+        ItemRec.SetRange("Item Template", ItemRec."Item Template"::Inventory);
+        ItemRec.SetRange("Item type template", ItemRec."Item type template"::"Unit Inventory");
+        ItemRec.SetRange("Inventory Unit Status", ItemRec."Inventory Unit Status"::Reserved);
+        ItemListPage.SetTableView(ItemRec);
+        ItemListPage.Run();
+    end;
+
+
+    //Sold Units Count
+    procedure GetAllSoldUnitsCount(): Integer;
+    var
+        ItemRec: Record Item;
+    begin
+        // Filter for Inventory template, Unit Inventory type, and Sold status
+        ItemRec.SetRange("Item Template", ItemRec."Item Template"::Inventory);
+        ItemRec.SetRange("Item type template", ItemRec."Item type template"::"Unit Inventory");
+        ItemRec.SetRange("Inventory Unit Status", ItemRec."Inventory Unit Status"::Sold);
+        exit(ItemRec.Count());
+    end;
+
+    procedure ShowSoldUnits();
+    var
+        ItemRec: Record Item;
+        ItemListPage: Page "Item List";
+    begin
+        // Filter for Inventory template, Unit Inventory type, and Sold status
+        ItemRec.SetRange("Item Template", ItemRec."Item Template"::Inventory);
+        ItemRec.SetRange("Item type template", ItemRec."Item type template"::"Unit Inventory");
+        ItemRec.SetRange("Inventory Unit Status", ItemRec."Inventory Unit Status"::Sold);
+        ItemListPage.SetTableView(ItemRec);
+        ItemListPage.Run();
+    end;
 
 
     //All Task Count
