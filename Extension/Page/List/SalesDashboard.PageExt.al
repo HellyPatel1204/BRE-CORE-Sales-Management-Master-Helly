@@ -31,6 +31,16 @@ pageextension 51251 "Sales Dashboard" extends "Sales & Relationship Mgr. RC"
                     ApplicationArea = Basic, Suite;
                     RunObject = Page "Construction Project List";
                 }
+
+                action(UnitRegistration)
+                {
+                    Caption = 'Unit Registration';
+                    ApplicationArea = Basic, Suite;
+                    RunObject = Page "Item List";
+                    RunPageView = where("Item Template" = const(Inventory), "Item type template" = const("Unit Inventory"));
+                    ToolTip = 'Open the Unit List page for unit registration.';
+                }
+
                 action(Incoterms)
                 {
                     Caption = 'Incoterms';
