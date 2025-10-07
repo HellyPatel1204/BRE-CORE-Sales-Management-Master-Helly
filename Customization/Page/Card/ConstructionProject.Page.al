@@ -5,7 +5,7 @@ page 53501 "Construction Project"
     ApplicationArea = All;
     Caption = 'Construction Project Card';
     RefreshOnActivate = true;
-    UsageCategory = Administration;
+    UsageCategory = None;
     layout
     {
         area(Content)
