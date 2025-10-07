@@ -9,17 +9,17 @@ pageextension 51255 "Create Task" extends "Create Task"
 
         modify("Start Time")
         {
-            Enabled = StartTimeEnable; // Use Enable instead of Editable
+            Enabled = StartTimeEnable;
         }
 
         modify("Duration")
         {
-            Enabled = DurationEnable; // Use Enable instead of Editable
+            Enabled = DurationEnable;
         }
 
         modify("Ending Time")
         {
-            Enabled = EndingTimeEnable; // Use Enable instead of Editable
+            Enabled = EndingTimeEnable;
         }
 
         addfirst(General)
@@ -33,105 +33,114 @@ pageextension 51255 "Create Task" extends "Create Task"
                 trigger OnValidate()
                 begin
                     ValidateCustomTaskType();
-                    EnableFields(); // Call enable fields function
+                    EnableFields();
                     CurrPage.Update(false);
                 end;
             }
         }
-    }
 
-    trigger OnAfterGetRecord()
-    begin
-        EnableFields(); // Enable fields based on current record
-    end;
+        addafter("Wizard Contact Name")
+        {
+            field("Threshold Value"; Rec."Threshold Value")
+            {
+                ApplicationArea = All;
+                Caption = 'Threshold Value';
+                ToolTip = 'This value is automatically populated from the selected contact.';
+                Editable = false;
+                Style = StandardAccent;
+            }
+            field("Budget Range (AED)"; Rec."Budget Range (AED)")
+            {
+                ApplicationArea = All;
+                Caption = 'Budget Range (AED)';
+                ToolTip = 'This value is automatically populated from the selected contact.';
+                Editable = false;
+                Style = StandardAccent;
+            }
+        }
+    }
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
-        EnableFields(); // Enable fields for new record
+        EnableFields();
     end;
 
     trigger OnOpenPage()
     begin
-        EnableFields(); // Initialize field states when page opens
+        EnableFields();
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        EnableFields();
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        EnableFields();
     end;
 
     var
         StartTimeEnable: Boolean;
         EndingTimeEnable: Boolean;
         DurationEnable: Boolean;
-        AllDayEventEnable: Boolean;
-        LocationEnable: Boolean;
 
     local procedure ValidateCustomTaskType()
     begin
-        // Set appropriate start time and duration based on task type
         case Rec."Custome Type" of
             Rec."Custome Type"::Meeting:
                 begin
-                    Rec."Start Time" := 090000T; // 9:00 AM
-                    Rec.Duration := 30 * 60 * 1000; // 30 minutes
+                    Rec."Start Time" := 090000T;
+                    Rec.Duration := 30 * 60 * 1000;
                     Rec."All Day Event" := false;
                 end;
             Rec."Custome Type"::"Phone Call":
                 begin
-                    Rec."Start Time" := 100000T; // 10:00 AM
-                    Rec.Duration := 30 * 60 * 1000; // 30 minutes
+                    Rec."Start Time" := 100000T;
+                    Rec.Duration := 30 * 60 * 1000;
                     Rec."All Day Event" := false;
                 end;
             Rec."Custome Type"::"Site Visit":
                 begin
-                    Rec."Start Time" := 140000T; // 2:00 PM
-                    Rec.Duration := 30 * 60 * 1000; // 30 minutes
+                    Rec."Start Time" := 140000T;
+                    Rec.Duration := 30 * 60 * 1000;
                     Rec."All Day Event" := false;
                 end;
             else begin
-                Rec."Start Time" := 090000T; // Default 9:00 AM
-                Rec.Duration := 30 * 60 * 1000; // 30 minutes
+                Rec."Start Time" := 090000T;
+                Rec.Duration := 30 * 60 * 1000;
                 Rec."All Day Event" := false;
             end;
         end;
 
-        // Calculate and set ending date/time
         CalculateEndingDateTime();
     end;
 
     local procedure EnableFields()
     begin
-        // OOB logic અનુસાર fields enable કરવા માટે
-
-        // Custom Task Type આધારે fields enable કરો
         case Rec."Custome Type" of
             Rec."Custome Type"::Meeting:
                 begin
                     StartTimeEnable := not Rec."All Day Event";
                     EndingTimeEnable := not Rec."All Day Event";
                     DurationEnable := not Rec."All Day Event";
-                    LocationEnable := true;
-                    AllDayEventEnable := true;
                 end;
             Rec."Custome Type"::"Phone Call":
                 begin
                     StartTimeEnable := true;
                     EndingTimeEnable := true;
                     DurationEnable := true;
-                    LocationEnable := false;
-                    AllDayEventEnable := false;
                 end;
             Rec."Custome Type"::"Site Visit":
                 begin
                     StartTimeEnable := not Rec."All Day Event";
                     EndingTimeEnable := not Rec."All Day Event";
                     DurationEnable := not Rec."All Day Event";
-                    LocationEnable := true;
-                    AllDayEventEnable := true;
                 end;
             else begin
-                // Default case - no custom type selected
                 StartTimeEnable := false;
                 EndingTimeEnable := false;
                 DurationEnable := false;
-                LocationEnable := false;
-                AllDayEventEnable := false;
             end;
         end;
     end;
